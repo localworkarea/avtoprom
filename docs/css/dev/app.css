@@ -796,6 +796,7 @@ body {
 }
 .shop__list {
   display: grid;
+  grid-template-columns: 100%;
   gap: 1.25rem;
 }
 .shop__list--prize {
@@ -807,6 +808,7 @@ body {
   background-color: var(--white);
   transition: box-shadow 0.3s ease;
   aspect-ratio: 400/200;
+  display: block;
   position: relative;
 }
 .shop__list--prize .shop__link::before {

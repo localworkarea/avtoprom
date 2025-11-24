@@ -809,6 +809,7 @@ background-color: var(--primary);
 		// .shop__list
 		&__list {
 			display: grid;
+			grid-template-columns: 100%;
 			gap: 20px;
 			@media (min-width:toEm($mobile)){
 				grid-template-columns: repeat(3,1fr);
@@ -837,6 +838,7 @@ background-color: var(--primary);
 			background-color: var(--white);
 			transition: box-shadow .3s ease;
 			aspect-ratio: 400/200;
+			display: block;
 			position: relative;
 			.shop__list--prize & {
 				&::before {
