@@ -61,6 +61,46 @@ function initSliders() {
 			});
 		}
 	}
+	if (document.querySelector('.slider-video')) {
+		new Swiper('.slider-video', {
+			modules: [Navigation, Pagination],
+			observer: true,
+			observeParents: true,
+			slidesPerView: 1.3,
+			spaceBetween: 0,
+			speed: 300,
+			loop: true,
+			allowTouchMove: false,
+
+			pagination: {
+				el: '.slider-video .swiper-pagination',
+				clickable: true,
+			},
+			navigation: {
+				prevEl: '.slider-video .swiper-button-prev',
+				nextEl: '.slider-video .swiper-button-next',
+			},
+
+			breakpoints: {
+				320: {
+					slidesPerView: 1.1,
+					spaceBetween: 20,
+				},
+				768: {
+					slidesPerView: 2.2,
+					spaceBetween: 20,
+				},
+				992: {
+					slidesPerView: 1.7,
+					spaceBetween: 30,
+				},
+			},
+
+			on: {
+			
+			}
+		});
+	}
 	// if (document.querySelector('.swiper')) { // <- Вказуємо склас потрібного слайдера
 	// 	// Створюємо слайдер
 	// 	new Swiper('.swiper', { // <- Вказуємо склас потрібного слайдера

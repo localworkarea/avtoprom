@@ -120,6 +120,83 @@ const gotoBlock = (targetBlock, noHeader = false, speed = 500, offsetTop = 0) =>
     });
   }
 };
+document.addEventListener("DOMContentLoaded", () => {
+  const videoButtons = document.querySelectorAll(".video-youtube__button");
+  const players = /* @__PURE__ */ new Map();
+  let apiLoaded = false;
+  let apiReadyCallbacks = [];
+  function loadYouTubeAPI(callback) {
+    if (apiLoaded) {
+      if (typeof YT !== "undefined" && YT.Player) callback();
+      else apiReadyCallbacks.push(callback);
+      return;
+    }
+    apiLoaded = true;
+    apiReadyCallbacks.push(callback);
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+    window.onYouTubeIframeAPIReady = function() {
+      apiReadyCallbacks.forEach((cb) => cb());
+      apiReadyCallbacks = [];
+    };
+  }
+  function pauseAll(exceptContainer = null) {
+    players.forEach((player, container) => {
+      if (container !== exceptContainer && player.pauseVideo) {
+        player.pauseVideo();
+      }
+    });
+  }
+  function createPlayer(container, code, autoplay = true) {
+    const iframeId = "yt-" + code + "-" + Date.now();
+    const iframe = document.createElement("div");
+    iframe.id = iframeId;
+    container.innerHTML = "";
+    container.appendChild(iframe);
+    container.classList.add("video-added");
+    const player = new YT.Player(iframeId, {
+      videoId: code,
+      playerVars: {
+        rel: 0,
+        showinfo: 0,
+        autoplay: autoplay ? 1 : 0
+      },
+      events: {
+        onStateChange(event) {
+          if (event.data === YT.PlayerState.PLAYING) {
+            pauseAll(container);
+          }
+        }
+      }
+    });
+    players.set(container, player);
+  }
+  videoButtons.forEach((button) => {
+    button.addEventListener("click", function() {
+      const code = this.dataset.youtube;
+      const container = this.closest(".video-youtube__body");
+      loadYouTubeAPI(() => createPlayer(container, code, true));
+    });
+  });
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      const container = entry.target;
+      const player = players.get(container);
+      if (!player) return;
+      if (entry.intersectionRatio < 0.8) {
+        if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+          player.pauseVideo();
+        }
+      }
+    });
+  }, {
+    threshold: [0, 0.2, 0.5, 0.8, 1]
+  });
+  document.querySelectorAll(".video-youtube__body").forEach((el) => {
+    observer.observe(el);
+  });
+});
 function isObject$1(obj) {
   return obj !== null && typeof obj === "object" && "constructor" in obj && obj.constructor === Object;
 }
@@ -5033,6 +5110,41 @@ function initSliders() {
       }
     });
   }
+  if (document.querySelector(".slider-video")) {
+    new Swiper(".slider-video", {
+      modules: [Navigation, Pagination],
+      observer: true,
+      observeParents: true,
+      slidesPerView: 1.3,
+      spaceBetween: 0,
+      speed: 300,
+      loop: true,
+      allowTouchMove: false,
+      pagination: {
+        el: ".slider-video .swiper-pagination",
+        clickable: true
+      },
+      navigation: {
+        prevEl: ".slider-video .swiper-button-prev",
+        nextEl: ".slider-video .swiper-button-next"
+      },
+      breakpoints: {
+        320: {
+          slidesPerView: 1.1,
+          spaceBetween: 20
+        },
+        768: {
+          slidesPerView: 2.2,
+          spaceBetween: 20
+        },
+        992: {
+          slidesPerView: 1.7,
+          spaceBetween: 30
+        }
+      },
+      on: {}
+    });
+  }
 }
 document.querySelector("[data-fls-slider]") ? window.addEventListener("load", initSliders) : null;
 class Popup {
@@ -5072,9 +5184,9 @@ class Popup {
       bodyLock: true,
       // Блокування скролла
       hashSettings: {
-        location: true,
+        location: false,
         // Хеш в адресному рядку
-        goHash: true
+        goHash: false
         // Перехід по наявності в адресному рядку
       },
       on: {
@@ -5152,7 +5264,6 @@ class Popup {
       if (buttonOpen) {
         e.preventDefault();
         this._dataValue = buttonOpen.getAttribute(this.options.attributeOpenButton) ? buttonOpen.getAttribute(this.options.attributeOpenButton) : "error";
-        this.youTubeCode = buttonOpen.getAttribute(this.options.youtubeAttribute) ? buttonOpen.getAttribute(this.options.youtubeAttribute) : null;
         if (this._dataValue !== "error") {
           if (!this.isOpen) this.lastFocusEl = buttonOpen;
           this.targetOpen.selector = `${this._dataValue}`;
@@ -5208,19 +5319,6 @@ class Popup {
       if (!this._reopen) this.previousActiveElement = document.activeElement;
       this.targetOpen.element = document.querySelector(`[${this.options.attributeMain}=${this.targetOpen.selector}]`);
       if (this.targetOpen.element) {
-        const codeVideo = this.youTubeCode || this.targetOpen.element.getAttribute(`${this.options.youtubeAttribute}`);
-        if (codeVideo) {
-          const urlVideo = `https://www.youtube.com/embed/${codeVideo}?rel=0&showinfo=0&autoplay=1`;
-          const iframe = document.createElement("iframe");
-          const autoplay = this.options.setAutoplayYoutube ? "autoplay;" : "";
-          iframe.setAttribute("allowfullscreen", "");
-          iframe.setAttribute("allow", `${autoplay}; encrypted-media`);
-          iframe.setAttribute("src", urlVideo);
-          if (!this.targetOpen.element.querySelector(`[${this.options.youtubePlaceAttribute}]`)) {
-            this.targetOpen.element.querySelector("[data-fls-popup-content]").setAttribute(`${this.options.youtubePlaceAttribute}`, "");
-          }
-          this.targetOpen.element.querySelector(`[${this.options.youtubePlaceAttribute}]`).appendChild(iframe);
-        }
         if (this.options.hashSettings.location) {
           this._getHash();
           this._setHash();
@@ -5266,11 +5364,6 @@ class Popup {
         popup: this
       }
     }));
-    if (this.targetOpen.element.querySelector(`[${this.options.youtubePlaceAttribute}]`)) {
-      setTimeout(() => {
-        this.targetOpen.element.querySelector(`[${this.options.youtubePlaceAttribute}]`).innerHTML = "";
-      }, 500);
-    }
     this.previousOpen.element.removeAttribute(this.options.classes.popupActive);
     this.previousOpen.element.setAttribute("aria-hidden", "true");
     if (!this._reopen) {
@@ -5301,10 +5394,6 @@ class Popup {
   }
   _openToHash() {
     let classInHash = window.location.hash.replace("#", "");
-    const openButton = document.querySelector(`[${this.options.attributeOpenButton}="${classInHash}"]`);
-    if (openButton) {
-      this.youTubeCode = openButton.getAttribute(this.options.youtubeAttribute) ? openButton.getAttribute(this.options.youtubeAttribute) : null;
-    }
     if (classInHash) this.open(classInHash);
   }
   // Встановлення хеша
@@ -5561,3 +5650,13 @@ function pageNavigation() {
 }
 document.querySelector("[data-fls-scrollto]") ? window.addEventListener("load", pageNavigation) : null;
 addTouchAttr();
+document.addEventListener("DOMContentLoaded", () => {
+  const list = document.querySelector(".popular__list");
+  if (!list) return;
+  const items = list.querySelectorAll(".popular__item");
+  let z = items.length;
+  items.forEach((item) => {
+    item.style.zIndex = z;
+    z--;
+  });
+});

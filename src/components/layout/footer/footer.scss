@@ -1,5 +1,141 @@
 .footer {
+	position: relative;
+	background-color: var(--primary);
+	color: var(--white);
+	// .footer__container
+	&__container {
+		position: relative;
+		z-index: 2;
+	}
+	// .footer__bg
+	&__bg {
+		position: absolute;
+		inset: 0;
+	}
+	
 	// .footer__container
 	&__container {
 	}
+	
+	// .footer__top
+	&__top {
+		border-bottom: 1px solid rgba(255,255,255,0.1);
+	}
+	
+	// .footer__title
+	&__title {
+		font-family: "AmazingSlab", sans-serif;
+		font-size: 40px;
+		line-height: 1.35;
+		font-weight: 700;
+		margin-bottom: 23px;
+	}
+	
+	// .footer__address
+	&__address {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 24px 40px;
+	}
+	
+	// .footer__item
+	&__item {
+		font-size: 24px;
+		line-height: 1.35;
+		@media (min-width:toEm($mobileSmall)){
+			 font-size: 26px; 
+		}
+	}
+	
+	// .footer__name
+	&__name {
+		font-weight: 700;
+		margin-bottom: 6px;
+	}
+	
+	// .footer__link
+	&__link {
+		opacity: 0.7;
+		transition: opacity .3s ease;
+		@media (any-hover: hover){
+			&:hover{
+				opacity: 1;
+			}
+		}
+	}
+	
+	// .footer__bottom
+	&__bottom {
+		padding: 60px 0 20px;
+		@media (min-width:toEm($mobileSmall)){
+			padding: 28px 0 20px;
+		}
+	}
+}
+
+.bottom-footer {
+	display: flex;
+	gap: 36px;
+	justify-content: space-between;
+		// .bottom-footer__left
+		&__left {
+			display: flex;
+			flex-direction: column;
+			gap: 28px;
+			@media (min-width:toEm($mobile)){
+				flex: 1;
+				flex-wrap: wrap;
+				flex-direction: row-reverse;
+				align-items: center;
+				  
+			}
+		}
+		
+		// .bottom-footer__logo
+		&__logo {
+			img {
+				width: 100%;
+				max-width: 266px;
+				height: auto;
+			}
+		}
+		
+		// .bottom-footer__policy
+		&__policy {
+			display: flex;
+			flex-direction: column;
+			gap: 10px 90px;
+			@media (min-width:toEm($mobile)){
+				flex: 1;
+					align-items: center;
+					justify-content: center;
+					flex-direction: row-reverse;
+					flex-wrap: wrap;
+			}
+			*{
+				opacity: 0.3;
+				@media (min-width:toEm($mobile)){
+					text-align: center;
+				}
+			}
+			a {
+				transition: opacity .3s ease;
+				@media (any-hover: hover){
+					&:hover{
+						opacity: 1;
+					}
+				}
+			}
+		}
+
+		// .bottom-footer__social
+		&__social {
+			display: flex;
+			flex-direction: column;
+			gap: 16px;
+			@media (min-width:toEm($mobile)){
+				 flex-direction: row; 
+			}
+		}
 }
