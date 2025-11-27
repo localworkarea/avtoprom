@@ -470,14 +470,9 @@ body {
 }
 .slider-hero {
   overflow: visible;
-  aspect-ratio: 763/439;
-}
-.slider-hero__slide {
-  aspect-ratio: 763/439;
 }
 .slider-hero__content {
   user-select: none;
-  aspect-ratio: 763/439;
 }
 .slider-hero__img {
   aspect-ratio: 763/439;
@@ -1178,8 +1173,11 @@ body::after {
   .hero__link.btn {
     max-width: 100%;
   }
-  .slider-hero__img {
+  .slider-hero {
     margin-inline: -1.25rem;
+  }
+  .slider-hero__pagination {
+    left: 1.25rem;
   }
   .popular__btn {
     font-size: 0.9375rem;
