@@ -1,6 +1,6 @@
 
 import Swiper from 'swiper';
-import { Navigation, Pagination, EffectFade } from 'swiper/modules';
+import { Navigation, Pagination, EffectFade, Autoplay } from 'swiper/modules';
 /*
 Основні модулі слайдера:
 Navigation, Pagination, Autoplay, 
@@ -22,7 +22,7 @@ function initSliders() {
 		const hasGradients = heroGradients.length > 0;
 
 		new Swiper('.slider-hero', {
-			modules: [Navigation, Pagination, EffectFade],
+			modules: [Navigation, Pagination, EffectFade, Autoplay],
 			observer: true,
 			observeParents: true,
 			slidesPerView: 1,
@@ -31,6 +31,10 @@ function initSliders() {
 			loop: true,
 			effect: 'fade',
 			fadeEffect: { crossFade: true },
+			autoplay: {
+				delay: 3000,
+				disableOnInteraction: false,
+			},
 
 			pagination: {
 				el: '.slider-hero .swiper-pagination',
